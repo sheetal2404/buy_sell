@@ -1,18 +1,45 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:my_app/screens/login_screen.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
+  static const String id = 'splash-screen';
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState(){
+    Timer(
+        Duration(
+      seconds: 3,
+    ), (){
+      FirebaseAuth.instance.authStateChanges().listen((User user) {
+        if (user == null){
+          Navigator.pushReplacementNamed(context, LoginScreen.id);
+        }else{
+          Navigator.pushReplacementNamed(context, LoginScreen.id);
+        }
+      });
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
 
     const colorizeColors = [
       Colors.white,
-      Colors.grey,
+      Colors.cyan,
     ];
 
     const colorizeTextStyle = TextStyle(
       fontSize: 30.0,
-      fontFamily: 'Horizon',
+      fontFamily: 'Lato',
     );
 
     return Scaffold(

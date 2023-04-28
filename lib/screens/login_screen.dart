@@ -10,7 +10,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
 
-    FirebaseAuth.instance
+    /*FirebaseAuth.instance
         .authStateChanges()
         .listen((User? user){
       if (user == null){
@@ -19,7 +19,7 @@ class LoginScreen extends StatelessWidget {
         // if its already logged in it will not ask to login again
         Navigator.pushReplacementNamed(context, LocationScreen.id);
       }
-    });
+    });*/
 
     return Scaffold(
       backgroundColor: Colors.cyan.shade900,

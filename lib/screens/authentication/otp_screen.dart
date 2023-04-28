@@ -9,7 +9,7 @@ import '../location_screen.dart';
 class OTPScreen extends StatefulWidget{
   final String number, verId;
 
-  OTPScreen({required this.number, required this.verId});
+  OTPScreen({this.number, this.verId});
 
   @override
   _OTPScreenState createState() => _OTPScreenState();
@@ -17,6 +17,11 @@ class OTPScreen extends StatefulWidget{
 }
 
 class _OTPScreenState extends State<OTPScreen>{
+
+  bool _loading = false;
+  String error = " ";
+
+  PhoneAuthService _services = PhoneAuthService();
 
   var _text1 = TextEditingController();
   var _text2 = TextEditingController();
@@ -32,17 +37,26 @@ class _OTPScreenState extends State<OTPScreen>{
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: widget.verId , smsCode: otp);
       //need to see otp validated or not
-      final User? user = (await _auth.signInWithCredential(credential)).user;
+      final User user = (await _auth.signInWithCredential(credential)).user;
 
       if(user!=null){
-        Navigator.pushReplacementNamed(context, LocationScreen.id);
+        _services.addUser(context);
       }else{
         print('login failed');
+        if(mounted){
+          setState(() {
+            error = 'Login failed';
+          });
+        }
       }
 
     }catch(e){
       print(e.toString());
-
+      if(mounted){
+       setState(() {
+         error = 'Invalid OTP';
+       });
+      }
     }
 
   }
@@ -215,6 +229,9 @@ class _OTPScreenState extends State<OTPScreen>{
                                   if(_text4.text.length==1){
                                     if(_text5.text.length==1){
                                       String _otp = '${_text1.text}${_text2.text}${_text3.text}${_text4.text}${_text5.text}${_text6.text}';
+                                      setState(() {
+                                        _loading=true;
+                                      });
 
 
                                       phoneCredential(context, _otp);
@@ -225,11 +242,31 @@ class _OTPScreenState extends State<OTPScreen>{
                               }
                             }
                           }
+                          else{
+                            _loading=false;
+                          }
                         }
                     ),
                   ),
+
                 ],
-              )
+              ),
+              SizedBox(height: 18,),
+              if(_loading)
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width:50,
+                  height:100,
+                  child: LinearProgressIndicator(
+                    backgroundColor: Colors.grey.shade200,
+                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+                  ),
+                ),
+              ),
+              SizedBox(height: 18,),
+              //need to show the error, if any occurs
+              Text(error,style: TextStyle(color: Colors.red, fontSize: 12),)
             ],
           ),
         ),
